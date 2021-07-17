@@ -11,6 +11,53 @@ d3.json("samples.json").then((importedData) => {
     // console.log(importedData.map(data => data.otu_ids));
     var utoData = importedData;
     var sampleData = utoData.samples;
+
+    console.log(sampleData);
+
+  sortedSampleData = sampleData.map(d=>d).sort(function(a, b) {
+    return parseFloat(b.sample_values) - parseFloat(a.sample_values);
+    });
+
+    console.log(sampleData.map(d=>d.id));
+
+
+
+    //   // Slice the first 10 objects for plotting
+      var sampleValueSorted = sortedSampleData.map(d=>d.sample_values[0]).slice(0,10);
+      var sampleOtuIdSorted = sortedSampleData.map(d=>d.otu_ids[0]).slice(0,10);
+    //   var sampleOtuIdSorted = sampleOtuIdSorted.map(i => 'OTU: ' + i);
+      console.log(sampleValueSorted);
+    //   console.log(sampleIdsTopTen);
+    
+    //   // Reverse the array due to Plotly's defaults
+    // sampleValuesTopTen  = sampleValuesTopTen.reverse();
+    
+    //   console.log(sampleData)
+      // Sort the data array using the greekSearchResults value
+
+
+
+//     //1) combine the arrays:
+//     var list = [];
+//     for (var j = 0; j < sampleValueSorted.length; j++) 
+//         list.push({'sample_values': sampleValueSorted[j], 'otu_ids': sampleOtuIdSorted[j]});
+
+//     //2) sort:
+//     list.sort(function(a, b) {
+//         return parseInt(a.sample_values) - parseInt(b.sample_values)
+//         //Sort could be modified to, for example, sort on the age 
+//         // if the name is the same.
+//     });
+
+//     var newSampleValueSorted = [];
+//     var newSampleOtuIdSorted = [];
+// //3) separate them back out:
+// for (var k = 0; k < list.length; k++) {
+//     newSampleValueSorted[k] = list[k].sample_values;
+//     newSampleOtuIdSorted[k] = list[k].otu_ids;
+// }
+
+// console.log(newSampleValueSorted);
     // console.log(sampleData.map(d=>d.sample_values));
     // console.log(sampleData);
 
@@ -19,48 +66,70 @@ d3.json("samples.json").then((importedData) => {
 // console.log(numArray3);
 
   // Sort the data array using the greekSearchResults value
-//   sampleData.sort(function(a, b) {
+//   sampleData = sampleData.sort(function(a, b) {
 //     return parseFloat(b.sample_values) - parseFloat(a.sample_values);
-//   });
-
-//   // Slice the first 10 objects for plotting
-  var sampleValuesTopTen = sampleData.map(d=>d.sample_values[0]).slice(0, 10);
-  var sampleIdsTopTen = sampleData.map(d=>d.otu_ids[0]).slice(0,10);
-  sampleIdsTopTen = sampleIdsTopTen.map(i => 'OTU: ' + i);
-  console.log(sampleValuesTopTen);
-  console.log(sampleIdsTopTen);
-
-//   // Reverse the array due to Plotly's defaults
-sampleValuesTopTen  = sampleValuesTopTen.reverse();
-
-  console.log(sampleData)
-
-//   dropdown 
-  function init() {
+// });
+function init() {
     var data = [{
-    type: "bar",
-      x: sampleValuesTopTen,
-      y: sampleIdsTopTen,
-    //   labels: sampleIdsTopTen,
+        type: "bar",
+        x: sampleValueSorted,
+        //   y: sampleOtuIdSorted,
+        labels: sampleOtuIdSorted,
+        orientation: 'h',
+        transforms: [{
+            type: 'sort',
+            target: 'x',
+            order: 'descending'
+        }]
+        }];
+    
+        var layout = {
+        height: 500,
+        width: 500,
+        };
 
-      orientation: 'h'
-    }];
+
+        Plotly.newPlot("bar", data, layout);    
+};  
+
+init();
+
+
+
+
+
+// //   dropdown 
+//   function init() {
+//     var data = [{
+//     type: "bar",
+//       x: sampleValueSorted,
+//       y: sampleOtuIdSorted,
+//     //   labels: sampleIdsTopTen,
+//       orientation: 'h',
+//     //   transforms: [{
+//     //     type: 'sort',
+//     //     target: 'y',
+//     //     order: 'descending'
+//     //   }]
+//     }];
   
-    var layout = {
-      height: 800,
-      width: 800
-    };
-  
-    Plotly.newPlot("bar", data, layout);
-  }
+//     var layout = {
+//       height: 800,
+//       width: 800,
+
+
+
+//     Plotly.newPlot("bar", data, layout);
+//   }
   
 //   // On change to the DOM, call getData()
 d3.selectAll("#selDataset").on("change", getData);
 //   // Function called by DOM changes
 function getData() {
-    var dropdownMenu = d3.select("selDataset");
+    var dropdownMenu = d3.select("#selDataset");
     // Assign the value of the dropdown menu option to a variable
     var dataset = dropdownMenu.property("value");
+    console.log(dataset);
     // Initialize an empty array for the country's data
 
     var data = [];
@@ -106,8 +175,9 @@ function getData() {
     // }
     // Call function to update the chart
     updatePlotly(data); 
-    console.log(sampleValue);
+    // console.log(sampleValue);
 };
+
 
 // d3.selectAll("#selDataset").on("change", optionChanged);
 
@@ -116,7 +186,8 @@ function getData() {
     Plotly.restyle("bar", "values", [newdata]);
   }
   
-  init();
+});
+
 
     // var sampleData = data.samples;
     // var values = (data.samples[0].sample_values);
@@ -189,7 +260,7 @@ function getData() {
   
     // // Render the plot to the div tag with id "plot"
     // Plotly.newPlot("plot", chartData, layout);
-  });
+ 
 
 //   // Slice the first 10 objects for plotting
 // slicedData = sortedByGreekSearch.slice(0, 10);
