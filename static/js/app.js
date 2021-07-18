@@ -1,11 +1,6 @@
 // Use D3 fetch to read the JSON file
 // The data from the JSON file is arbitrarily named importedData as the argument
-
-function unpack(rows, index) {
-    return rows.map(function(row) {
-      return row[index];
-    });
-  }
+var getData;
 
 d3.json("samples.json").then((importedData) => {
     // console.log(importedData.map(data => data.otu_ids));
@@ -14,155 +9,128 @@ d3.json("samples.json").then((importedData) => {
 
     console.log(sampleData);
 
-  sortedSampleData = sampleData.map(d=>d).sort(function(a, b) {
-    return parseFloat(b.sample_values) - parseFloat(a.sample_values);
+    sortedSampleData = sampleData.map(d=>d).sort(function(a, b) {
+        return parseFloat(b.sample_values) - parseFloat(a.sample_values);
     });
 
     console.log(sampleData.map(d=>d.id));
 
-
-
     //   // Slice the first 10 objects for plotting
-      var sampleValueSorted = sortedSampleData.map(d=>d.sample_values[0]).slice(0,10);
-      var sampleOtuIdSorted = sortedSampleData.map(d=>d.otu_ids[0]).slice(0,10);
+    var sampleValueSorted = sortedSampleData.map(d=>d.sample_values[0]).slice(0,10);
+    var sampleOtuIdSorted = sortedSampleData.map(d=>d.otu_ids[0]).slice(0,10);
     //   var sampleOtuIdSorted = sampleOtuIdSorted.map(i => 'OTU: ' + i);
-      console.log(sampleValueSorted);
+    console.log(sampleValueSorted);
     //   console.log(sampleIdsTopTen);
-    
-    //   // Reverse the array due to Plotly's defaults
-    // sampleValuesTopTen  = sampleValuesTopTen.reverse();
-    
-    //   console.log(sampleData)
-      // Sort the data array using the greekSearchResults value
 
 
-
-//     //1) combine the arrays:
-//     var list = [];
-//     for (var j = 0; j < sampleValueSorted.length; j++) 
-//         list.push({'sample_values': sampleValueSorted[j], 'otu_ids': sampleOtuIdSorted[j]});
-
-//     //2) sort:
-//     list.sort(function(a, b) {
-//         return parseInt(a.sample_values) - parseInt(b.sample_values)
-//         //Sort could be modified to, for example, sort on the age 
-//         // if the name is the same.
-//     });
-
-//     var newSampleValueSorted = [];
-//     var newSampleOtuIdSorted = [];
-// //3) separate them back out:
-// for (var k = 0; k < list.length; k++) {
-//     newSampleValueSorted[k] = list[k].sample_values;
-//     newSampleOtuIdSorted[k] = list[k].otu_ids;
-// }
-
-// console.log(newSampleValueSorted);
-    // console.log(sampleData.map(d=>d.sample_values));
-    // console.log(sampleData);
-
-//     var numArray3 = [3, 2, 1];
-// numArray3.sort((firstNum, secondNum) => firstNum - secondNum);
-// console.log(numArray3);
-
-  // Sort the data array using the greekSearchResults value
-//   sampleData = sampleData.sort(function(a, b) {
-//     return parseFloat(b.sample_values) - parseFloat(a.sample_values);
-// });
-function init() {
-    var data = [{
-        type: "bar",
-        x: sampleValueSorted,
-        //   y: sampleOtuIdSorted,
-        labels: sampleOtuIdSorted,
-        orientation: 'h',
-        transforms: [{
-            type: 'sort',
-            target: 'x',
-            order: 'descending'
-        }]
-        }];
-    
-        var layout = {
-        height: 500,
-        width: 500,
-        };
+    function init() {
+        var data = [{
+            type: "bar",
+            x: sampleValueSorted,
+            //   y: sampleOtuIdSorted,
+            labels: sampleOtuIdSorted,
+            orientation: 'h',
+            transforms: [{
+                type: 'sort',
+                target: 'x',
+                order: 'descending'
+            }]
+            }];
+        
+            var layout = {
+            height: 500,
+            width: 500,
+            };
 
 
-        Plotly.newPlot("bar", data, layout);    
-};  
+            Plotly.newPlot("bar", data, layout);    
+    };  
 
-init();
+    init();
 
-
-
-
-
-// //   dropdown 
-//   function init() {
-//     var data = [{
-//     type: "bar",
-//       x: sampleValueSorted,
-//       y: sampleOtuIdSorted,
-//     //   labels: sampleIdsTopTen,
-//       orientation: 'h',
-//     //   transforms: [{
-//     //     type: 'sort',
-//     //     target: 'y',
-//     //     order: 'descending'
-//     //   }]
-//     }];
-  
-//     var layout = {
-//       height: 800,
-//       width: 800,
-
-
-
-//     Plotly.newPlot("bar", data, layout);
-//   }
-  
 //   // On change to the DOM, call getData()
-d3.selectAll("#selDataset").on("change", getData);
+// d3.selectAll("#selDataset").on("change", getData);
 //   // Function called by DOM changes
-function getData() {
-    var dropdownMenu = d3.select("#selDataset");
-    // Assign the value of the dropdown menu option to a variable
-    var dataset = dropdownMenu.property("value");
-    console.log(dataset);
-    // Initialize an empty array for the country's data
+document.getElementById('#selDataset')
+    .addEventListener("change", function(event){
+        var dropdownMenu = d3.select("#selDataset");
+        // Assign the value of the dropdown menu option to a variable
+        var dataset = dropdownMenu.property("value");
+        console.log(dataset);
+        // Initialize an empty array for the country's data
+    
+        var data = [];
+        var individual = "";
+        var sampleValue = [];
+        var otuID = [];
+        var otuLabel = [];
+    
+        for (var j = 0; j < sortedSampleData.length; j++){
+            // console.log(sampleData[j]);
+            if (dataset == sortedSampleData.map(d=>d.id)) {
+    
+                
+                individual = sortedSampleData.map(d=>d.id);
+                console.log(individual);
+                otuLabel = sortedSampleData.map(d=>d.otu_labels);
+                console.log(otuLabel);
+                otuID = sortedSampleData.map(d=>d.otu_ids);
+                console.log(otuID);
+                sampleValue = sortedSampleData.map(d=>d.sample_value);
+                console.log(SampleValue);
+    
+                var data = [{
+                    x: sampleValue,
+                  //   x: sampleIdsTopTen,
+                    labels: otuID,
+                    type: "bar",
+                    orientation: 'h'
+                  }];
+            } else {
+                console.log("error occurred");
+            }    
+            updatePlotly(data); 
+        }
+    });
 
-    var data = [];
-    var individual = "";
-    var sampleValue = [];
-    var otuID = [];
-    var otuLabel = [];
+// function getData() {
+//     var dropdownMenu = d3.select("#selDataset");
+//     // Assign the value of the dropdown menu option to a variable
+//     var dataset = dropdownMenu.property("value");
+//     console.log(dataset);
+//     // Initialize an empty array for the country's data
 
-    for (var j = 0; j < sampleData.length; j++){
-        // console.log(sampleData[j]);
-        if (dataset == sampleData.map(d=>d.id[j])) {
+//     var data = [];
+//     var individual = "";
+//     var sampleValue = [];
+//     var otuID = [];
+//     var otuLabel = [];
+
+//     for (var j = 0; j < sampleData.length; j++){
+//         // console.log(sampleData[j]);
+//         if (dataset == sampleData.map(d=>d.id[j])) {
 
             
-            individual = sampleData.map(d=>d.id[j]);
-            console.log(individual);
-            otuLabel = sampleData.map(d=>d.otu_labels[j]);
-            console.log(otuLabel);
-            otuID = sampleData.map(d=>d.otu_ids[j]);
-            console.log(otuID);
-            sampleValue = sampleData.map(d=>d.sample_value[j]);
-            console.log(SampleValue);
+//             individual = sampleData.map(d=>d.id[j]);
+//             console.log(individual);
+//             otuLabel = sampleData.map(d=>d.otu_labels[j]);
+//             console.log(otuLabel);
+//             otuID = sampleData.map(d=>d.otu_ids[j]);
+//             console.log(otuID);
+//             sampleValue = sampleData.map(d=>d.sample_value[j]);
+//             console.log(SampleValue);
 
-            var data = [{
-                x: sampleValue,
-              //   x: sampleIdsTopTen,
-                labels: otuID,
-                type: "bar",
-                orientation: 'h'
-              }];
-        } else {
-            console.log("error occurred");
-        }    
-    };
+//             var data = [{
+//                 x: sampleValue,
+//               //   x: sampleIdsTopTen,
+//                 labels: otuID,
+//                 type: "bar",
+//                 orientation: 'h'
+//               }];
+//         } else {
+//             console.log("error occurred");
+//         }    
+//     };
   
     // if (dataset == 'us') {
     //     data = us;
@@ -174,9 +142,9 @@ function getData() {
     //     data = canada;
     // }
     // Call function to update the chart
-    updatePlotly(data); 
-    // console.log(sampleValue);
-};
+//     updatePlotly(data); 
+//     // console.log(sampleValue);
+// };
 
 
 // d3.selectAll("#selDataset").on("change", optionChanged);
