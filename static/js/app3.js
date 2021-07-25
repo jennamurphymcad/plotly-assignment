@@ -70,6 +70,9 @@ function initPlot(samples) {
   //   var sampleData = importedData.samples;
   //   // var sampleData = utoData.samples;
   //   console.log(sampleData);
+
+  var y_array = samples[0].otu_ids.slice(0,10).reverse();
+  var new_y_array = y_array.map(x => 'OTU ' + x);
     
 //     // var sampleDataInit_values = sampleData.map(d=>d.sample_values[1]).slice(0,10);
 //     // var sampleDataInit_otu_ids = sampleData.map(d=>d.otu_ids[1]).slice(0,10);
@@ -80,7 +83,7 @@ function initPlot(samples) {
     var trace1 = {
       text:  samples[0].otu_labels.slice(0,10).reverse(),
       x: samples[0].sample_values.slice(0,10).reverse(),
-      y: samples[0].otu_ids.slice(0,10).reverse(),      
+      y: new_y_array,      
       orientation: 'h',
       name: 'OTU',
       type: 'bar',
@@ -98,13 +101,13 @@ function initPlot(samples) {
     var data = [trace1];
     var layout = {          
       autosize: false,
-      width: 500,
+      width: 600,
       height: 500,
       margin: {
-        l: 50,
+        l: 100,
         r: 50,
         b: 100,
-        t: 100,
+        t: 0,
         pad: 4
       }
     };
@@ -121,12 +124,13 @@ function initPlot(samples) {
     var trace2 = {
       x: samples[0].otu_ids,
       y: samples[0].sample_values,
+      text:  samples[0].otu_labels,
       mode: 'markers',
       marker: {
         color: samples[0].otu_ids,
         opacity: [1, 0.8, 0.6, 0.4],
         size: samples[0].sample_values,
-        sizeref: .5,
+        // sizeref: .1,
         sizemode: 'area'
       }
     };
@@ -169,6 +173,9 @@ function updatePlotly() {
     console.log(names);
     console.log(metadata);
     console.log(samples);
+
+   
+
       
 
 //     // Use D3 to select the dropdown menu
@@ -182,10 +189,19 @@ function updatePlotly() {
     for (var i = 0 ; i < names.length ; i++){
       if (names[i] === dataset ) {
 
+        var y_array = samples[i].otu_ids.slice(0,10).reverse();
+        var new_y_array = y_array.map(x => 'OTU ' + x);
+     
+        // for(var i=0; i < y_array.length ; i++) {
+        //   y_array[i]="OTU "+ y_array[i];
+        // };
+        // // var y_label = y_array.forEach(item => { item = "OTU " + item });
+        // console.log(newarray);
+
         traceUpdate = {
           text: samples[i].otu_labels.slice(0,10).reverse(),
           x: samples[i].sample_values.slice(0,10).reverse(),
-          y: samples[i].otu_ids.slice(0,10).reverse(),              
+          y: new_y_array,              
           orientation: 'h',
           name: 'OTU',
           type: 'bar',
@@ -204,13 +220,13 @@ function updatePlotly() {
         var data = [traceUpdate];
         var layout = {
           autosize: false,
-          width: 500,
+          width: 600,
           height: 500,
           margin: {
-            l: 50,
+            l: 100,
             r: 50,
             b: 100,
-            t: 100,
+            t: 0,
             pad: 4
           }
         };
@@ -225,6 +241,7 @@ function updatePlotly() {
         var trace2Update = {
           x: samples[i].otu_ids,
           y: samples[i].sample_values,
+          text:  samples[i].otu_labels,
           mode: 'markers',
           marker: {
             color: samples[i].otu_ids,
