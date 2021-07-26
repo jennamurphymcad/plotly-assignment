@@ -100,7 +100,10 @@ function initPlot(samples, metadata) {
     };
 
     var data = [trace1];
-    var layout = {          
+    var layout = {   
+      title: {
+        text: "Top 10 Bacteria Cultures Found"
+      },       
       autosize: false,
       width: 600,
       height: 500,
@@ -108,7 +111,7 @@ function initPlot(samples, metadata) {
         l: 100,
         r: 50,
         b: 100,
-        t: 0,
+        t: 50,
         pad: 4
       }
     };
@@ -131,7 +134,7 @@ function initPlot(samples, metadata) {
         color: samples[0].otu_ids,
         opacity: [1, 0.8, 0.6, 0.4],
         size: samples[0].sample_values,
-        // sizeref: .1,
+        sizeref: .1,
         sizemode: 'area'
       }
     };
@@ -139,7 +142,7 @@ function initPlot(samples, metadata) {
     var dataBubble = [trace2];
 
     var layoutBubble = {
-      title: 'OTU ID',
+      title: 'Bacteria Cultures Per Sample',
       showlegend: false,
       height: 400,
       width: 1200
@@ -295,6 +298,9 @@ function updatePlotly() {
     
         var data = [traceUpdate];
         var layout = {
+          title: {
+            text: "Top 10 Bacteria Cultures Found"
+          },
           autosize: false,
           width: 600,
           height: 500,
@@ -302,7 +308,7 @@ function updatePlotly() {
             l: 100,
             r: 50,
             b: 100,
-            t: 0,
+            t: 50,
             pad: 4
           }
         };
@@ -323,7 +329,7 @@ function updatePlotly() {
             color: samples[i].otu_ids,
             opacity: [1, 0.8, 0.6, 0.4],
             size: samples[i].sample_values,
-            // // sizeref: .5,
+            sizeref: .1,
             sizemode: 'area'
           }
         };
@@ -331,7 +337,7 @@ function updatePlotly() {
         var dataBubbleUpdate = [trace2Update];
     
         var layoutBubble = {
-          title: 'OTU ID',
+          title: 'Bacteria Cultures Per Sample',
           showlegend: false,
           height: 400,
           width: 1200
