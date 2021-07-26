@@ -49,8 +49,9 @@ d3.json("samples.json").then((importedData) => {
     selector.appendChild(currentOption);
     }
   }
+
   assignOptions(names, userSelector);
-  initPlot(samples);
+  initPlot(samples, metadata);
   });
 };
 
@@ -59,7 +60,7 @@ setup();
 
 
 // //initialize charts
-function initPlot(samples) {
+function initPlot(samples, metadata) {
 
   // console.log(names);
   // console.log(metadata);
@@ -145,16 +146,53 @@ function initPlot(samples) {
     };
 
     Plotly.newPlot('bubble', dataBubble, layoutBubble);
+    // document.getElementById("sample-metadata").html("test");
+
+    var node = document.createElement("p");                 
+    var textnode = document.createTextNode("ID: " + `${metadata[0].id}`); 
+    var node2 = document.createElement("p");     
+    var textnode2 = document.createTextNode("ETHNICITY: " + `${metadata[0].ethnicity}`); 
+    var node3 = document.createElement("p");                 
+    var textnode3 = document.createTextNode("GENDER: " + `${metadata[0].gender}`);
+    var node4 = document.createElement("p");                 
+    var textnode4 = document.createTextNode("AGE: " + `${metadata[0].age}`); 
+    var node5 = document.createElement("p");                 
+    var textnode5 = document.createTextNode("LOCATION: " + `${metadata[0].location}`); 
+    var node6 = document.createElement("p");                 
+    var textnode6 = document.createTextNode("BBTYPE: " + `${metadata[0].bbtype}`); 
+    var node7 = document.createElement("p");                 
+    var textnode7 = document.createTextNode("WFREQ: " + `${metadata[0].wfreq}`); 
+    
+    node.appendChild(textnode);       
+    node2.appendChild(textnode2);  
+    node3.appendChild(textnode3);   
+    node4.appendChild(textnode4); 
+    node5.appendChild(textnode5); 
+    node6.appendChild(textnode6); 
+    node7.appendChild(textnode7);               
+
+    document.getElementById("sample-metadata").appendChild(node); 
+    document.getElementById("sample-metadata").appendChild(node2);   
+    document.getElementById("sample-metadata").appendChild(node3);  
+    document.getElementById("sample-metadata").appendChild(node4);   
+    document.getElementById("sample-metadata").appendChild(node5); 
+    document.getElementById("sample-metadata").appendChild(node6); 
+    document.getElementById("sample-metadata").appendChild(node7); 
+
+
+
+  // var metaContainer = document.querySelector('.well'),
+  // plotEl = innerContainer.querySelector('#bar'),
+  // metaDiv = document.querySelector('#sample-metadata');
+  // demoInfo = innerContainer.querySelector('#sample-metadata')
+
+  
+
+  // assignOptions(names, userSelector);
 
 };
 
-
-
-
-
-
 //   // This function is called when a dropdown menu item is selected
-  
   
 //   // document.getElementById('#selDataset')
 //   //   .addEventListener("change", function(event){
@@ -174,9 +212,16 @@ function updatePlotly() {
     console.log(metadata);
     console.log(samples);
 
+  // remove metadata from previous selection
+    function removeAllChildNodes(parent) {
+      while (parent.firstChild) {
+          parent.removeChild(parent.firstChild);
+      }
+   }
+  
+   const container = document.querySelector('#sample-metadata');
+   removeAllChildNodes(container);
    
-
-      
 
 //     // Use D3 to select the dropdown menu
     var dropdownMenu = d3.select("#selDataset");
@@ -191,6 +236,37 @@ function updatePlotly() {
 
         var y_array = samples[i].otu_ids.slice(0,10).reverse();
         var new_y_array = y_array.map(x => 'OTU ' + x);
+
+        var node = document.createElement("p");                 
+        var textnode = document.createTextNode("ID: " + `${metadata[i].id}`); 
+        var node2 = document.createElement("p");     
+        var textnode2 = document.createTextNode("ETHNICITY: " + `${metadata[i].ethnicity}`); 
+        var node3 = document.createElement("p");                 
+        var textnode3 = document.createTextNode("GENDER: " + `${metadata[i].gender}`);
+        var node4 = document.createElement("p");                 
+        var textnode4 = document.createTextNode("AGE: " + `${metadata[i].age}`); 
+        var node5 = document.createElement("p");                 
+        var textnode5 = document.createTextNode("LOCATION: " + `${metadata[i].location}`); 
+        var node6 = document.createElement("p");                 
+        var textnode6 = document.createTextNode("BBTYPE: " + `${metadata[i].bbtype}`); 
+        var node7 = document.createElement("p");                 
+        var textnode7 = document.createTextNode("WFREQ: " + `${metadata[i].wfreq}`); 
+        
+        node.appendChild(textnode);       
+        node2.appendChild(textnode2);  
+        node3.appendChild(textnode3);   
+        node4.appendChild(textnode4); 
+        node5.appendChild(textnode5); 
+        node6.appendChild(textnode6); 
+        node7.appendChild(textnode7);               
+    
+        document.getElementById("sample-metadata").appendChild(node); 
+        document.getElementById("sample-metadata").appendChild(node2);   
+        document.getElementById("sample-metadata").appendChild(node3);  
+        document.getElementById("sample-metadata").appendChild(node4);   
+        document.getElementById("sample-metadata").appendChild(node5); 
+        document.getElementById("sample-metadata").appendChild(node6); 
+        document.getElementById("sample-metadata").appendChild(node7); 
      
         // for(var i=0; i < y_array.length ; i++) {
         //   y_array[i]="OTU "+ y_array[i];
@@ -265,6 +341,8 @@ function updatePlotly() {
       }
     }
     Plotly.newPlot("bubble", dataBubbleUpdate, layoutBubble);
+
+
   });
 };
 
