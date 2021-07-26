@@ -1,5 +1,3 @@
-
-
 /**
  * Helper function to select stock data
  * Returns an array of values
@@ -20,10 +18,9 @@ function unpack(rows, index) {
  }
 
 
+//get data pull, set up dropdown menu, and call the initial plot
 function setup() {
-  // var path = "samples.json"
-
-d3.json("samples.json").then((importedData) => {
+  d3.json("samples.json").then((importedData) => {
 
     var data = importedData;
     var names = importedData.names;
@@ -55,32 +52,19 @@ d3.json("samples.json").then((importedData) => {
   });
 };
 
+//call the set up function
 setup();
 
 
-
-// //initialize charts
+//initial chart set up
 function initPlot(samples, metadata) {
 
-  // console.log(names);
-  // console.log(metadata);
-  // console.log(samples);
-
-  // d3.json(path).then((importedData) => {
-
-  //   var sampleData = importedData.samples;
-  //   // var sampleData = utoData.samples;
-  //   console.log(sampleData);
-
+  //Add OTU in front of OTU ID for y axis labels
   var y_array = samples[0].otu_ids.slice(0,10).reverse();
   var new_y_array = y_array.map(x => 'OTU ' + x);
+  
     
-//     // var sampleDataInit_values = sampleData.map(d=>d.sample_values[1]).slice(0,10);
-//     // var sampleDataInit_otu_ids = sampleData.map(d=>d.otu_ids[1]).slice(0,10);
-//     // var sampleDataInit_otu_ids = sampleDataInit_otu_ids.map(i => 'OTU: ' + i);
-//     //horizontal bar chart
-    
-
+  //initial bar chart
     var trace1 = {
       text:  samples[0].otu_labels.slice(0,10).reverse(),
       x: samples[0].sample_values.slice(0,10).reverse(),
@@ -88,15 +72,6 @@ function initPlot(samples, metadata) {
       orientation: 'h',
       name: 'OTU',
       type: 'bar',
-//       // transforms: [{
-//       //   type: 'sort',
-//       //   target: 'x',
-//       //   order: 'ascending',
-//       // }],
-//       mode:'markers',
-//               marker:{color:'rgba(200, 50, 100, .7)', 
-//               size:16},
-//               hoverinfo: "sampleData.map(d=>d.otu_labels[1])",
     };
 
     var data = [trace1];
@@ -118,13 +93,7 @@ function initPlot(samples, metadata) {
 
     Plotly.newPlot('bar', data, layout);
 
-//     // Bubble Chart
-//     // * Use `otu_ids` for the x values.
-//     // * Use `sample_values` for the y values.
-//     // * Use `sample_values` for the marker size.
-//     // * Use `otu_ids` for the marker colors.
-//     // * Use `otu_labels` for the text values.
-
+    //initial bubble chart
     var trace2 = {
       x: samples[0].otu_ids,
       y: samples[0].sample_values,
@@ -150,6 +119,7 @@ function initPlot(samples, metadata) {
 
     Plotly.newPlot('bubble', dataBubble, layoutBubble);
 
+    // initial gauge chart
     var dataGauge = [
       {
         domain: { x: [0, 1], y: [0, 1] },
@@ -168,8 +138,8 @@ function initPlot(samples, metadata) {
     
     var layoutGauge = { width: 500, height: 500, margin: { t: 0, b: 0 } };
     Plotly.newPlot('gauge', dataGauge, layoutGauge);
-    // document.getElementById("sample-metadata").html("test");
 
+    // Append Metadata for initial load
     var node = document.createElement("p");                 
     var textnode = document.createTextNode("ID: " + `${metadata[0].id}`); 
     var node2 = document.createElement("p");     
@@ -199,27 +169,10 @@ function initPlot(samples, metadata) {
     document.getElementById("sample-metadata").appendChild(node4);   
     document.getElementById("sample-metadata").appendChild(node5); 
     document.getElementById("sample-metadata").appendChild(node6); 
-    document.getElementById("sample-metadata").appendChild(node7); 
-
-
-
-  // var metaContainer = document.querySelector('.well'),
-  // plotEl = innerContainer.querySelector('#bar'),
-  // metaDiv = document.querySelector('#sample-metadata');
-  // demoInfo = innerContainer.querySelector('#sample-metadata')
-
-  
-
-  // assignOptions(names, userSelector);
-
+    document.getElementById("sample-metadata").appendChild(node7);
 };
 
-//   // This function is called when a dropdown menu item is selected
-  
-//   // document.getElementById('#selDataset')
-//   //   .addEventListener("change", function(event){
-//   // updatePlotly("940")
- 
+// update All plots and data when dropdown menu is changed
 function updatePlotly() {
   d3.json("samples.json").then((importedData) => {
 
@@ -244,21 +197,20 @@ function updatePlotly() {
    const container = document.querySelector('#sample-metadata');
    removeAllChildNodes(container);
    
-
-//     // Use D3 to select the dropdown menu
     var dropdownMenu = d3.select("#selDataset");
     // Assign the value of the dropdown menu option to a variable
     var dataset = dropdownMenu.property("value");
     console.log(dataset);
-  
-//     // var bar = d3.selectAll("#bar").node();
-
+   
     for (var i = 0 ; i < names.length ; i++){
       if (names[i] === dataset ) {
+
+        // add OTU in front of OTU ID number
 
         var y_array = samples[i].otu_ids.slice(0,10).reverse();
         var new_y_array = y_array.map(x => 'OTU ' + x);
 
+        // append updated metadata 
         var node = document.createElement("p");                 
         var textnode = document.createTextNode("ID: " + `${metadata[i].id}`); 
         var node2 = document.createElement("p");     
@@ -290,11 +242,7 @@ function updatePlotly() {
         document.getElementById("sample-metadata").appendChild(node6); 
         document.getElementById("sample-metadata").appendChild(node7); 
      
-        // for(var i=0; i < y_array.length ; i++) {
-        //   y_array[i]="OTU "+ y_array[i];
-        // };
-        // // var y_label = y_array.forEach(item => { item = "OTU " + item });
-        // console.log(newarray);
+        // bar chart update
 
         traceUpdate = {
           text: samples[i].otu_labels.slice(0,10).reverse(),
@@ -303,16 +251,6 @@ function updatePlotly() {
           orientation: 'h',
           name: 'OTU',
           type: 'bar',
-//           // transforms: [{
-//           //   type: 'sort',
-//           //   target: 'x',
-//           //   order: 'ascending',
-//           // }],
-          
-          // mode:'markers',
-          //         marker:{color:'rgba(200, 50, 100, .7)', 
-          //         size:16},
-          //         hoverinfo: "sampleData.map(d=>d.otu_labels[i])",
         }
     
         var data = [traceUpdate];
@@ -335,9 +273,7 @@ function updatePlotly() {
         Plotly.newPlot('bar', data, layout);
         
         
-        
-//         //  currentSample_value.push(sampleValue[i]);
-//         //   currentOTU_id.push(otuIDs[i]);   
+      //bubble chart update
         
         var trace2Update = {
           x: samples[i].otu_ids,
@@ -362,7 +298,7 @@ function updatePlotly() {
           width: 1200
         };
       
-    
+    // gauge chart update
       var dataGaugeUpdate = [
         {
           domain: { x: [0, 1], y: [0, 1] },
@@ -390,4 +326,5 @@ function updatePlotly() {
   });
 };
 
+//event listener for menu, run plot update when there is a change
 d3.selectAll("#selDataset").on("change", updatePlotly);
