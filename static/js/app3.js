@@ -149,6 +149,25 @@ function initPlot(samples, metadata) {
     };
 
     Plotly.newPlot('bubble', dataBubble, layoutBubble);
+
+    var dataGauge = [
+      {
+        domain: { x: [0, 1], y: [0, 1] },
+        value: metadata[0].wfreq,
+        title: { text: "Belly Button Washing Frequency" },
+        type: "indicator",
+        mode: "gauge+number",
+        gauge: {
+          axis: { range: [null, 9] }
+          // steps: [
+          //   { range: [0, 250], color: "lightgray" },
+          //   { range: [250, 400], color: "gray" }
+          // ],
+      }}
+    ];
+    
+    var layoutGauge = { width: 500, height: 500, margin: { t: 0, b: 0 } };
+    Plotly.newPlot('gauge', dataGauge, layoutGauge);
     // document.getElementById("sample-metadata").html("test");
 
     var node = document.createElement("p");                 
@@ -342,11 +361,30 @@ function updatePlotly() {
           height: 400,
           width: 1200
         };
-  
-
-      }
+      
+    
+      var dataGaugeUpdate = [
+        {
+          domain: { x: [0, 1], y: [0, 1] },
+          value: metadata[i].wfreq,
+          title: { text: "Belly Button Washing Frequency" },
+          type: "indicator",
+          mode: "gauge+number",
+          gauge: {
+            axis: { range: [null, 9] }
+            // steps: [
+            //   { range: [0, 250], color: "lightgray" },
+            //   { range: [250, 400], color: "gray" }
+            // ],
+        }}
+      ];
+    }
+      
+      var layoutGaugeUpdate = { width: 500, height: 500, margin: { t: 0, b: 0 } };
+      
     }
     Plotly.newPlot("bubble", dataBubbleUpdate, layoutBubble);
+    Plotly.newPlot('gauge', dataGaugeUpdate, layoutGaugeUpdate);
 
 
   });
