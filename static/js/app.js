@@ -1,312 +1,330 @@
-// Use D3 fetch to read the JSON file
-// The data from the JSON file is arbitrarily named importedData as the argument
-// var getData;
+/**
+ * Helper function to select stock data
+ * Returns an array of values
+ * @param {array} rows
+ * @param {integer} index
+ * index 0 - Date
+ * index 1 - Open
+ * index 2 - High
+ * index 3 - Low
+ * index 4 - Close
+ * index 5 - Volume
+ */
 
-d3.json("samples.json").then((importedData) => {
-    // console.log(importedData.map(data => data.otu_ids));
-    var utoData = importedData;
-    var sampleData = utoData.samples;
-
-    console.log(sampleData);
-
-    sortedSampleData = sampleData.map(d=>d).sort(function(a, b) {
-        return parseFloat(b.sample_values) - parseFloat(a.sample_values);
-    });
-
-    console.log(sampleData.map(d=>d.id));
-
-    //   // Slice the first 10 objects for plotting
-    var sampleValueSorted = sortedSampleData.map(d=>d.sample_values[0]).slice(0,10);
-    var sampleOtuIdSorted = sortedSampleData.map(d=>d.otu_ids[0]).slice(0,10);
-    //   var sampleOtuIdSorted = sampleOtuIdSorted.map(i => 'OTU: ' + i);
-    console.log(sampleValueSorted);
-    //   console.log(sampleIdsTopTen);
+function unpack(rows, index) {
+   return rows.map(function(row) {
+     return row[index];
+   });
+ }
 
 
-    function init() {
-        var data = [{
-            type: "bar",
-            x: sampleValueSorted,
-            //   y: sampleOtuIdSorted,
-            labels: sampleOtuIdSorted,
-            orientation: 'h',
-            transforms: [{
-                type: 'sort',
-                target: 'x',
-                order: 'descending'
-            }]
-            }];
-        
-            var layout = {
-            height: 500,
-            width: 500,
-            };
+//get data pull, set up dropdown menu, and call the initial plot
+function setup() {
+  d3.json("samples.json").then((importedData) => {
+
+    var data = importedData;
+    var names = importedData.names;
+    var metadata = importedData.metadata;
+    var samples = importedData.samples;
+    // var sampleData = utoData.samples;
+    // console.log(dataObjects);
+    console.log(data);
+    console.log(names);
+    console.log(metadata);
+    console.log(samples);
 
 
-            Plotly.newPlot("bar", data, layout);    
-    };  
+  var innerContainer = document.querySelector('.well'),
+  // plotEl = innerContainer.querySelector('#bar'),
+  userSelector = innerContainer.querySelector('#selDataset');
+  demoInfo = innerContainer.querySelector('#sample-metadata')
 
-    init();
-
-//   // On change to the DOM, call getData()
-// d3.selectAll("#selDataset").on("change", getData);
-//   // Function called by DOM changes
-document.getElementById('#selDataset')
-    .addEventListener("change", function(event){
-        var dropdownMenu = d3.select("#selDataset");
-        // Assign the value of the dropdown menu option to a variable
-        var dataset = dropdownMenu.property("value");
-        console.log(dataset);
-        // Initialize an empty array for the country's data
-    
-        var data = [];
-        var individual = "";
-        var sampleValue = [];
-        var otuID = [];
-        var otuLabel = [];
-    
-        for (var j = 0; j < sortedSampleData.length; j++){
-            // console.log(sampleData[j]);
-            if (dataset == sortedSampleData.map(d=>d.id)) {
-    
-                
-                individual = sortedSampleData.map(d=>d.id);
-                console.log(individual);
-                otuLabel = sortedSampleData.map(d=>d.otu_labels);
-                console.log(otuLabel);
-                otuID = sortedSampleData.map(d=>d.otu_ids);
-                console.log(otuID);
-                sampleValue = sortedSampleData.map(d=>d.sample_value);
-                console.log(SampleValue);
-    
-                var data = [{
-                    x: sampleValue,
-                  //   x: sampleIdsTopTen,
-                    labels: otuID,
-                    type: "bar",
-                    orientation: 'h'
-                  }];
-            } else {
-                console.log("error occurred");
-            }    
-            updatePlotly(data); 
-        }
-    });
-
-// function getData() {
-//     var dropdownMenu = d3.select("#selDataset");
-//     // Assign the value of the dropdown menu option to a variable
-//     var dataset = dropdownMenu.property("value");
-//     console.log(dataset);
-//     // Initialize an empty array for the country's data
-
-//     var data = [];
-//     var individual = "";
-//     var sampleValue = [];
-//     var otuID = [];
-//     var otuLabel = [];
-
-//     for (var j = 0; j < sampleData.length; j++){
-//         // console.log(sampleData[j]);
-//         if (dataset == sampleData.map(d=>d.id[j])) {
-
-            
-//             individual = sampleData.map(d=>d.id[j]);
-//             console.log(individual);
-//             otuLabel = sampleData.map(d=>d.otu_labels[j]);
-//             console.log(otuLabel);
-//             otuID = sampleData.map(d=>d.otu_ids[j]);
-//             console.log(otuID);
-//             sampleValue = sampleData.map(d=>d.sample_value[j]);
-//             console.log(SampleValue);
-
-//             var data = [{
-//                 x: sampleValue,
-//               //   x: sampleIdsTopTen,
-//                 labels: otuID,
-//                 type: "bar",
-//                 orientation: 'h'
-//               }];
-//         } else {
-//             console.log("error occurred");
-//         }    
-//     };
-  
-    // if (dataset == 'us') {
-    //     data = us;
-    // }
-    // else if (dataset == 'uk') {
-    //     data = uk;
-    // }
-    // else if (dataset == 'canada') {
-    //     data = canada;
-    // }
-    // Call function to update the chart
-//     updatePlotly(data); 
-//     // console.log(sampleValue);
-// };
-
-
-// d3.selectAll("#selDataset").on("change", optionChanged);
-
-//   // Update the restyled plot's values
-  function updatePlotly(newdata) {
-    Plotly.restyle("bar", "values", [newdata]);
+  function assignOptions(names, selector) {
+  for (var i = 0; i < names.length;  i++) {
+    var currentOption = document.createElement('option');
+    currentOption.text = names[i];
+    selector.appendChild(currentOption);
+    }
   }
-  
-});
+
+  assignOptions(names, userSelector);
+  initPlot(samples, metadata);
+  });
+};
+
+//call the set up function
+setup();
 
 
-    // var sampleData = data.samples;
-    // var values = (data.samples[0].sample_values);
-    // console.log(values);
-    // var sampleValuesID = sampleValues.map(row => row.sample_values);
-    // var stock = data.dataset.dataset_code;
-    // var startDate = data.dataset.start_date;
-    // var endDate = data.dataset.end_date;
-    // var dates = unpack(data.dataset.data, 0);
-    // var closingPrices = unpack(data.dataset.data, 4);
-    // console.log(sampleValuesID);
+//initial chart set up
+function initPlot(samples, metadata) {
 
-//     var trace1 = {
-//       x: sampleData.map(row => row.otu_ids),
-//       y: sampleData.map(row => row.sample_values),
-//       text: sampleData.map(row => row.otu_labels),
-//       name: "OTU",
-//       type: "bar",
-//       orientation: "h"
-//     };
+  //Add OTU in front of OTU ID for y axis labels
+  var y_array = samples[0].otu_ids.slice(0,10).reverse();
+  var new_y_array = y_array.map(x => 'OTU ' + x);
   
-//    var chartData = [trace1];
+    
+  //initial bar chart
+    var trace1 = {
+      text:  samples[0].otu_labels.slice(0,10).reverse(),
+      x: samples[0].sample_values.slice(0,10).reverse(),
+      y: new_y_array,      
+      orientation: 'h',
+      name: 'OTU',
+      type: 'bar',
+    };
 
-//        var layout = {
-//       title: "OTU",
-//       margin: {
-//         l: 100,
-//         r: 100,
-//         t: 100,
-//         b: 100
-//       }
-//     };
+    var data = [trace1];
+    var layout = {   
+      title: {
+        text: "Top 10 Bacteria Cultures Found"
+      },       
+      autosize: false,
+      width: 600,
+      height: 500,
+      margin: {
+        l: 100,
+        r: 50,
+        b: 100,
+        t: 50,
+        pad: 4
+      }
+    };
 
-//     Plotly.newPlot("bar", chartData, layout);
-  
-    // Sort the data array using the greekSearchResults value
-    // data.sort(function(a, b) {
-    //   return parseFloat(b.greekSearchResults) - parseFloat(a.greekSearchResults);
-    // });
-  
-    // // Slice the first 10 objects for plotting
-    // data = data.slice(0, 10);
-  
-    // // Reverse the array due to Plotly's defaults
-    // data = data.reverse();
-  
-    // // Trace1 for the Greek Data
-    // var trace1 = {
-    //   x: data.map(row => row.greekSearchResults),
-    //   y: data.map(row => row.greekName),
-    //   text: data.map(row => row.greekName),
-    //   name: "Greek",
-    //   type: "bar",
-    //   orientation: "h"
-    // };
-  
-    // // data
-    // var chartData = [trace1];
-  
-    // // Apply the group bar mode to the layout
-    // var layout = {
-    //   title: "Greek gods search results",
-    //   margin: {
-    //     l: 100,
-    //     r: 100,
-    //     t: 100,
-    //     b: 100
-    //   }
-    // };
-  
-    // // Render the plot to the div tag with id "plot"
-    // Plotly.newPlot("plot", chartData, layout);
- 
+    Plotly.newPlot('bar', data, layout);
 
-//   // Slice the first 10 objects for plotting
-// slicedData = sortedByGreekSearch.slice(0, 10);
+    //initial bubble chart
+    var trace2 = {
+      x: samples[0].otu_ids,
+      y: samples[0].sample_values,
+      text:  samples[0].otu_labels,
+      mode: 'markers',
+      marker: {
+        color: samples[0].otu_ids,
+        opacity: [1, 0.8, 0.6, 0.4],
+        size: samples[0].sample_values,
+        sizeref: .1,
+        sizemode: 'area'
+      }
+    };
 
-// // Reverse the array to accommodate Plotly's defaults
-// reversedData = slicedData.reverse();
+    var dataBubble = [trace2];
 
-// // Trace1 for the Greek Data
-// var trace1 = {
-//   x: reversedData.map(object => object.greekSearchResults),
-//   y: reversedData.map(object => object.greekName),
-//   text: reversedData.map(object => object.greekName),
-//   name: "Greek",
-//   type: "bar",
-//   orientation: "h"
-// };
+    var layoutBubble = {
+      title: 'Bacteria Cultures Per Sample',
+      showlegend: false,
+      height: 400,
+      width: 1200
+    };
 
-// // data
-// var data = [trace1];
+    Plotly.newPlot('bubble', dataBubble, layoutBubble);
 
-// // Apply the group bar mode to the layout
-// var layout = {
-//   title: "Greek gods search results",
-//   margin: {
-//     l: 100,
-//     r: 100,
-//     t: 100,
-//     b: 100
-//   }
-// };
+    // initial gauge chart
+    var dataGauge = [
+      {
+        domain: { x: [0, 1], y: [0, 1] },
+        value: metadata[0].wfreq,
+        title: { text: "Belly Button Washing Frequency" },
+        type: "indicator",
+        mode: "gauge+number",
+        gauge: {
+          axis: { range: [null, 9] }
+          // steps: [
+          //   { range: [0, 250], color: "lightgray" },
+          //   { range: [250, 400], color: "gray" }
+          // ],
+      }}
+    ];
+    
+    var layoutGauge = { width: 500, height: 500, margin: { t: 0, b: 0 } };
+    Plotly.newPlot('gauge', dataGauge, layoutGauge);
 
-// // Render the plot to the div tag with id "plot"
-// Plotly.newPlot("plot", data, layout);
+    // Append Metadata for initial load
+    var node = document.createElement("p");                 
+    var textnode = document.createTextNode("ID: " + `${metadata[0].id}`); 
+    var node2 = document.createElement("p");     
+    var textnode2 = document.createTextNode("ETHNICITY: " + `${metadata[0].ethnicity}`); 
+    var node3 = document.createElement("p");                 
+    var textnode3 = document.createTextNode("GENDER: " + `${metadata[0].gender}`);
+    var node4 = document.createElement("p");                 
+    var textnode4 = document.createTextNode("AGE: " + `${metadata[0].age}`); 
+    var node5 = document.createElement("p");                 
+    var textnode5 = document.createTextNode("LOCATION: " + `${metadata[0].location}`); 
+    var node6 = document.createElement("p");                 
+    var textnode6 = document.createTextNode("BBTYPE: " + `${metadata[0].bbtype}`); 
+    var node7 = document.createElement("p");                 
+    var textnode7 = document.createTextNode("WFREQ: " + `${metadata[0].wfreq}`); 
+    
+    node.appendChild(textnode);       
+    node2.appendChild(textnode2);  
+    node3.appendChild(textnode3);   
+    node4.appendChild(textnode4); 
+    node5.appendChild(textnode5); 
+    node6.appendChild(textnode6); 
+    node7.appendChild(textnode7);               
+
+    document.getElementById("sample-metadata").appendChild(node); 
+    document.getElementById("sample-metadata").appendChild(node2);   
+    document.getElementById("sample-metadata").appendChild(node3);  
+    document.getElementById("sample-metadata").appendChild(node4);   
+    document.getElementById("sample-metadata").appendChild(node5); 
+    document.getElementById("sample-metadata").appendChild(node6); 
+    document.getElementById("sample-metadata").appendChild(node7);
+};
+
+// update All plots and data when dropdown menu is changed
+function updatePlotly() {
+  d3.json("samples.json").then((importedData) => {
+
+    var data = importedData;
+    var names = importedData.names;
+    var metadata = importedData.metadata;
+    var samples = importedData.samples;
+    // var sampleData = utoData.samples;
+    // console.log(dataObjects);
+    console.log(data);
+    console.log(names);
+    console.log(metadata);
+    console.log(samples);
+
+  // remove metadata from previous selection
+    function removeAllChildNodes(parent) {
+      while (parent.firstChild) {
+          parent.removeChild(parent.firstChild);
+      }
+   }
+  
+   const container = document.querySelector('#sample-metadata');
+   removeAllChildNodes(container);
+   
+    var dropdownMenu = d3.select("#selDataset");
+    // Assign the value of the dropdown menu option to a variable
+    var dataset = dropdownMenu.property("value");
+    console.log(dataset);
+   
+    for (var i = 0 ; i < names.length ; i++){
+      if (names[i] === dataset ) {
+
+        // add OTU in front of OTU ID number
+
+        var y_array = samples[i].otu_ids.slice(0,10).reverse();
+        var new_y_array = y_array.map(x => 'OTU ' + x);
+
+        // append updated metadata 
+        var node = document.createElement("p");                 
+        var textnode = document.createTextNode("ID: " + `${metadata[i].id}`); 
+        var node2 = document.createElement("p");     
+        var textnode2 = document.createTextNode("ETHNICITY: " + `${metadata[i].ethnicity}`); 
+        var node3 = document.createElement("p");                 
+        var textnode3 = document.createTextNode("GENDER: " + `${metadata[i].gender}`);
+        var node4 = document.createElement("p");                 
+        var textnode4 = document.createTextNode("AGE: " + `${metadata[i].age}`); 
+        var node5 = document.createElement("p");                 
+        var textnode5 = document.createTextNode("LOCATION: " + `${metadata[i].location}`); 
+        var node6 = document.createElement("p");                 
+        var textnode6 = document.createTextNode("BBTYPE: " + `${metadata[i].bbtype}`); 
+        var node7 = document.createElement("p");                 
+        var textnode7 = document.createTextNode("WFREQ: " + `${metadata[i].wfreq}`); 
+        
+        node.appendChild(textnode);       
+        node2.appendChild(textnode2);  
+        node3.appendChild(textnode3);   
+        node4.appendChild(textnode4); 
+        node5.appendChild(textnode5); 
+        node6.appendChild(textnode6); 
+        node7.appendChild(textnode7);               
+    
+        document.getElementById("sample-metadata").appendChild(node); 
+        document.getElementById("sample-metadata").appendChild(node2);   
+        document.getElementById("sample-metadata").appendChild(node3);  
+        document.getElementById("sample-metadata").appendChild(node4);   
+        document.getElementById("sample-metadata").appendChild(node5); 
+        document.getElementById("sample-metadata").appendChild(node6); 
+        document.getElementById("sample-metadata").appendChild(node7); 
+     
+        // bar chart update
+
+        traceUpdate = {
+          text: samples[i].otu_labels.slice(0,10).reverse(),
+          x: samples[i].sample_values.slice(0,10).reverse(),
+          y: new_y_array,              
+          orientation: 'h',
+          name: 'OTU',
+          type: 'bar',
+        }
+    
+        var data = [traceUpdate];
+        var layout = {
+          title: {
+            text: "Top 10 Bacteria Cultures Found"
+          },
+          autosize: false,
+          width: 600,
+          height: 500,
+          margin: {
+            l: 100,
+            r: 50,
+            b: 100,
+            t: 50,
+            pad: 4
+          }
+        };
+
+        Plotly.newPlot('bar', data, layout);
+        
+        
+      //bubble chart update
+        
+        var trace2Update = {
+          x: samples[i].otu_ids,
+          y: samples[i].sample_values,
+          text:  samples[i].otu_labels,
+          mode: 'markers',
+          marker: {
+            color: samples[i].otu_ids,
+            opacity: [1, 0.8, 0.6, 0.4],
+            size: samples[i].sample_values,
+            sizeref: .1,
+            sizemode: 'area'
+          }
+        };
+    
+        var dataBubbleUpdate = [trace2Update];
+    
+        var layoutBubble = {
+          title: 'Bacteria Cultures Per Sample',
+          showlegend: false,
+          height: 400,
+          width: 1200
+        };
+      
+    // gauge chart update
+      var dataGaugeUpdate = [
+        {
+          domain: { x: [0, 1], y: [0, 1] },
+          value: metadata[i].wfreq,
+          title: { text: "Belly Button Washing Frequency" },
+          type: "indicator",
+          mode: "gauge+number",
+          gauge: {
+            axis: { range: [null, 9] }
+            // steps: [
+            //   { range: [0, 250], color: "lightgray" },
+            //   { range: [250, 400], color: "gray" }
+            // ],
+        }}
+      ];
+    }
+      
+      var layoutGaugeUpdate = { width: 500, height: 500, margin: { t: 0, b: 0 } };
+      
+    }
+    Plotly.newPlot("bubble", dataBubbleUpdate, layoutBubble);
+    Plotly.newPlot('gauge', dataGaugeUpdate, layoutGaugeUpdate);
 
 
-  //dropdown
-//   function init() {
-//     var data = [{
-//       values: us,
-//       labels: labels,
-//       type: "pie"
-//     }];
-  
-//     var layout = {
-//       height: 600,
-//       width: 800
-//     };
-  
-//     Plotly.newPlot("pie", data, layout);
-//   }
-  
-//   // On change to the DOM, call getData()
-//   d3.selectAll("#selDataset").on("change", getData);
-  
-//   // Function called by DOM changes
-//   function getData() {
-//     var dropdownMenu = d3.select("#selDataset");
-//     // Assign the value of the dropdown menu option to a variable
-//     var dataset = dropdownMenu.property("value");
-//     // Initialize an empty array for the country's data
-//     var data = [];
-  
-//     if (dataset == 'us') {
-//         data = us;
-//     }
-//     else if (dataset == 'uk') {
-//         data = uk;
-//     }
-//     else if (dataset == 'canada') {
-//         data = canada;
-//     }
-//     // Call function to update the chart
-//     updatePlotly(data);
-//   }
-  
-//   // Update the restyled plot's values
-//   function updatePlotly(newdata) {
-//     Plotly.restyle("pie", "values", [newdata]);
-//   }
-  
-//   init();
+  });
+};
+
+//event listener for menu, run plot update when there is a change
+d3.selectAll("#selDataset").on("change", updatePlotly);
